@@ -1,7 +1,5 @@
 use bevy::prelude::*;
-use bevy_node_editor::{
-    NodeMenuPlugin, NodePlugins, NodeTemplate, PanCameraPlugin,
-};
+use bevy_node_editor::{NodeMenuPlugin, NodePlugins, NodeSet, PanCameraPlugin};
 
 mod menu;
 mod nodes;
@@ -22,7 +20,5 @@ fn main() {
 }
 
 fn setup(mut commands: Commands) {
-    let template: NodeTemplate<ShaderNodes> = ShaderNodes::Print.into();
-
-    commands.spawn(template);
+    commands.spawn(ShaderNodes::Print.template());
 }

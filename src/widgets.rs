@@ -5,7 +5,8 @@ use bevy::{
     render::{
         camera::RenderTarget,
         render_resource::{
-            AsBindGroup, Extent3d, ShaderRef, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
+            AsBindGroup, Extent3d, ShaderRef, TextureDescriptor, TextureDimension, TextureFormat,
+            TextureUsages,
         },
         view::RenderLayers,
     },
@@ -13,7 +14,7 @@ use bevy::{
 use bevy_node_editor::{
     assets::DefaultAssets,
     widget::{Widget, WidgetPlugin},
-    NodeEvent,
+    NodeEvent, SlotWidget,
 };
 
 use crate::nodes::ShaderNodes;
@@ -58,13 +59,20 @@ impl Widget<ShaderNodes> for MaterialPreviewWidget {
     ) {
         self.size = area;
 
-        commands
-            .entity(entity)
-            .insert(ReadyForPreview);
+        commands.entity(entity).insert(ReadyForPreview);
     }
 
     fn size(&self) -> Vec2 {
         self.size
+    }
+}
+
+impl SlotWidget<Self, MaterialPreviewWidget> for ShaderNodes {
+    fn get_widget(&self) -> Option<MaterialPreviewWidget> {
+        match self {
+            ShaderNodes::MaterialPreview => Some(MaterialPreviewWidget::default()),
+            _ => None,
+        }
     }
 }
 
@@ -81,10 +89,7 @@ impl Material for PreviewMaterial {
 #[derive(Component)]
 struct PreviewMesh;
 
-fn rotate_preview_mesh(
-    time: Res<Time>,
-    mut query: Query<&mut Transform, With<PreviewMesh>>,
-) {
+fn rotate_preview_mesh(time: Res<Time>, mut query: Query<&mut Transform, With<PreviewMesh>>) {
     for mut transform in query.iter_mut() {
         transform.rotate_y(1.3 * time.delta_seconds());
     }
@@ -121,13 +126,16 @@ fn setup_material_preview(
         image.resize(size);
 
         let image_handle = images.add(image);
-        let mesh = meshes.add(Mesh::from(shape::UVSphere { radius: 6.0, ..default() }));
+        let mesh = meshes.add(Mesh::from(shape::UVSphere {
+            radius: 6.0,
+            ..default()
+        }));
         let material = materials.add(PreviewMaterial {});
         let first_pass_layer = RenderLayers::layer(1);
 
         let pbr_entity = commands
             .spawn((
-                    MaterialMeshBundle{
+                MaterialMeshBundle {
                     mesh,
                     material,
                     ..default()
@@ -148,7 +156,7 @@ fn setup_material_preview(
                         .looking_at(Vec3::ZERO, Vec3::Y),
                     ..default()
                 },
-                first_pass_layer
+                first_pass_layer,
             ))
             .id();
         let render_to_entity = commands
@@ -172,7 +180,9 @@ fn update_preview_material(
     if let Some(ev) = ev_node.iter().next() {
         if let NodeEvent::Resolved(value) = ev {
             let shader_str = value.build().unwrap();
-            let shader_handle = shaders.get_mut(&PREVIEW_SHADER_HANDLE.typed().into()).unwrap();
+            let shader_handle = shaders
+                .get_mut(&PREVIEW_SHADER_HANDLE.typed().into())
+                .unwrap();
 
             *shader_handle = Shader::from_wgsl(shader_str);
         }

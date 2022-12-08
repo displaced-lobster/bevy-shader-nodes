@@ -1,7 +1,5 @@
 use bevy::prelude::*;
-use bevy_node_editor::{
-    NodeInput, NodeSet, NodeSlot, NodeTemplate,
-};
+use bevy_node_editor::{NodeInput, NodeOutput, NodeSet, NodeSlot, NodeTemplate};
 use color_eyre::eyre::Result;
 use std::{collections::HashMap, io::Write};
 
@@ -25,13 +23,13 @@ impl ShaderBuilder {
             writeln!(&mut buf, "\t{}", line)?;
         }
 
-        let var = if self.var.len() > 0 {
-            &self.var
-        } else {
-            "0.0"
-        };
+        let var = if self.var.len() > 0 { &self.var } else { "0.0" };
 
-        writeln!(&mut buf, "\treturn {};", self.output.transform(ShaderIO::Vec4, var, Some("1.0")))?;
+        writeln!(
+            &mut buf,
+            "\treturn {};",
+            self.output.transform(ShaderIO::Vec4, var, Some("1.0"))
+        )?;
         writeln!(&mut buf, "}}")?;
 
         Ok(String::from_utf8(buf)?)
@@ -89,7 +87,11 @@ pub enum ShaderNodes {
 impl NodeSet for ShaderNodes {
     type NodeIO = ShaderBuilder;
 
-    fn resolve(&self, inputs: &HashMap<String, Self::NodeIO>) -> Self::NodeIO {
+    fn resolve(
+        &self,
+        inputs: &HashMap<String, Self::NodeIO>,
+        _output: Option<&str>,
+    ) -> Self::NodeIO {
         match self {
             Self::Extend => {
                 let mut builder = inputs["value"].clone();
@@ -99,13 +101,15 @@ impl NodeSet for ShaderNodes {
                 builder.output = input_io.extend();
                 builder.var = format!("{}_{}", input_var, "extend");
 
-                builder.content.push(format!("let {} = {};", builder.var, input_io.transform(builder.output, &input_var, Some("0.0"))));
+                builder.content.push(format!(
+                    "let {} = {};",
+                    builder.var,
+                    input_io.transform(builder.output, &input_var, Some("0.0"))
+                ));
 
                 builder
             }
-            Self::MaterialPreview => {
-                inputs["input"].clone()
-            },
+            Self::MaterialPreview => inputs["input"].clone(),
             Self::Print => {
                 let builder = inputs["output"].clone();
                 let shader = builder.build().unwrap();
@@ -113,26 +117,22 @@ impl NodeSet for ShaderNodes {
                 println!("{}", shader);
 
                 builder
-            },
-            Self::UV => {
-                ShaderBuilder {
-                    output: ShaderIO::Vec2,
-                    var: "uv".to_string(),
-                    ..default()
-                }
+            }
+            Self::UV => ShaderBuilder {
+                output: ShaderIO::Vec2,
+                var: "uv".to_string(),
+                ..default()
             },
         }
     }
-}
 
-impl Into<NodeTemplate<ShaderNodes>> for ShaderNodes {
-    fn into(self) -> NodeTemplate<ShaderNodes> {
+    fn template(self) -> NodeTemplate<Self> {
         let preview_size = 400.0;
         let mut template = match self {
             Self::Extend => NodeTemplate {
                 title: "Extend".to_string(),
                 inputs: Some(vec![NodeInput::from_label("value")]),
-                output_label: Some("vec".to_string()),
+                outputs: Some(vec![NodeOutput::from_label("vec")]),
                 ..default()
             },
             Self::MaterialPreview => NodeTemplate {
@@ -149,7 +149,7 @@ impl Into<NodeTemplate<ShaderNodes>> for ShaderNodes {
             },
             Self::UV => NodeTemplate {
                 title: "UV".to_string(),
-                output_label: Some("uv".to_string()),
+                outputs: Some(vec![NodeOutput::from_label("uv")]),
                 ..default()
             },
         };
