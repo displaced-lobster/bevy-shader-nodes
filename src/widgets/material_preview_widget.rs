@@ -5,7 +5,12 @@ use bevy::{
     render::{
         camera::RenderTarget,
         render_resource::{
-            AsBindGroup, Extent3d, ShaderRef, TextureDescriptor, TextureDimension, TextureFormat,
+            AsBindGroup,
+            Extent3d,
+            ShaderRef,
+            TextureDescriptor,
+            TextureDimension,
+            TextureFormat,
             TextureUsages,
         },
         view::RenderLayers,
@@ -14,7 +19,8 @@ use bevy::{
 use bevy_node_editor::{
     assets::DefaultAssets,
     widget::{Widget, WidgetPlugin},
-    NodeEvent, SlotWidget,
+    NodeEvent,
+    SlotWidget,
 };
 
 use crate::nodes::ShaderNodes;
