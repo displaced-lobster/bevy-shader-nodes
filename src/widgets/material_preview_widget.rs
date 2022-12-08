@@ -55,7 +55,9 @@ pub struct MaterialPreviewWidget {
 #[derive(Component)]
 struct ReadyForPreview;
 
-impl Widget<ShaderNodes> for MaterialPreviewWidget {
+impl Widget for MaterialPreviewWidget {
+    type WidgetValue = ();
+
     fn build(
         &mut self,
         entity: Entity,
