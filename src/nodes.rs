@@ -1,5 +1,12 @@
 use bevy::prelude::*;
-use bevy_node_editor::{NodeInput, NodeOutput, NodeSet, NodeSlot, NodeTemplate};
+use bevy_node_editor::{
+    widgets::NumberInput,
+    NodeInput,
+    NodeOutput,
+    NodeSet,
+    NodeSlot,
+    NodeTemplate,
+};
 use color_eyre::eyre::Result;
 use std::{collections::HashMap, io::Write};
 
@@ -28,7 +35,7 @@ impl ShaderBuilder {
         writeln!(
             &mut buf,
             "\treturn {};",
-            self.output.transform(ShaderIO::Vec4, var, Some("1.0"))
+            self.output.transform(ShaderIO::Vec4, var, Some(1.0))
         )?;
         writeln!(&mut buf, "}}")?;
 
@@ -54,21 +61,21 @@ impl ShaderIO {
             ShaderIO::Vec4 => ShaderIO::Vec4,
         }
     }
-    fn transform(self, target: ShaderIO, var: &str, extend: Option<&str>) -> String {
-        let extend = extend.unwrap_or("0.0");
+    fn transform(self, target: ShaderIO, var: &str, extend: Option<f32>) -> String {
+        let extend = extend.unwrap_or(0.0);
 
         match (self, target) {
             (Self::F32, Self::F32) => var.to_string(),
-            (Self::F32, Self::Vec2) => format!("vec2<f32>({}, {})", var, extend),
-            (Self::F32, Self::Vec3) => format!("vec3<f32>({}, vec2<f32>({}))", var, extend),
-            (Self::F32, Self::Vec4) => format!("vec4<f32>({}, vec3<f32>({}))", var, extend),
+            (Self::F32, Self::Vec2) => format!("vec2<f32>({}, {:.5})", var, extend),
+            (Self::F32, Self::Vec3) => format!("vec3<f32>({}, vec2<f32>({:.5}))", var, extend),
+            (Self::F32, Self::Vec4) => format!("vec4<f32>({}, vec3<f32>({:.5}))", var, extend),
             (_, Self::F32) => format!("{}.x", var),
             (Self::Vec2, Self::Vec2) => var.to_string(),
-            (Self::Vec2, Self::Vec3) => format!("vec3<f32>({}, {})", var, extend),
-            (Self::Vec2, Self::Vec4) => format!("vec4<f32>({}, vec2<f32>({}))", var, extend),
+            (Self::Vec2, Self::Vec3) => format!("vec3<f32>({}, {:.5})", var, extend),
+            (Self::Vec2, Self::Vec4) => format!("vec4<f32>({}, vec2<f32>({:.5}))", var, extend),
             (_, Self::Vec2) => format!("{}.xy", var),
             (Self::Vec3, Self::Vec3) => var.to_string(),
-            (Self::Vec3, Self::Vec4) => format!("vec4<f32>({}, {})", var, extend),
+            (Self::Vec3, Self::Vec4) => format!("vec4<f32>({}, {:.5})", var, extend),
             (_, Self::Vec3) => format!("{}.xyz", var),
             _ => var.to_string(),
         }
@@ -77,7 +84,7 @@ impl ShaderIO {
 
 #[derive(Clone, Default, PartialEq)]
 pub enum ShaderNodes {
-    Extend,
+    Extend(NumberInput),
     MaterialPreview,
     #[default]
     Print,
@@ -93,7 +100,7 @@ impl NodeSet for ShaderNodes {
         _output: Option<&str>,
     ) -> Self::NodeIO {
         match self {
-            Self::Extend => {
+            Self::Extend(input) => {
                 let mut builder = inputs["value"].clone();
                 let input_var = builder.var;
                 let input_io = builder.output;
@@ -104,7 +111,7 @@ impl NodeSet for ShaderNodes {
                 builder.content.push(format!(
                     "let {} = {};",
                     builder.var,
-                    input_io.transform(builder.output, &input_var, Some("0.0"))
+                    input_io.transform(builder.output, &input_var, Some(input.value))
                 ));
 
                 builder
@@ -129,10 +136,11 @@ impl NodeSet for ShaderNodes {
     fn template(self) -> NodeTemplate<Self> {
         let preview_size = 400.0;
         let mut template = match self {
-            Self::Extend => NodeTemplate {
+            Self::Extend(_) => NodeTemplate {
                 title: "Extend".to_string(),
                 inputs: Some(vec![NodeInput::from_label("value")]),
                 outputs: Some(vec![NodeOutput::from_label("vec")]),
+                slot: Some(NodeSlot::new(20.0)),
                 ..default()
             },
             Self::MaterialPreview => NodeTemplate {
