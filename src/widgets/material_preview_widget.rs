@@ -186,7 +186,7 @@ fn update_preview_material(
     mut ev_node: EventReader<NodeEvent<ShaderNodes>>,
 ) {
     if let Some(ev) = ev_node.iter().next() {
-        if let NodeEvent::Resolved(value) = ev {
+        if let NodeEvent::Resolved((_, value)) = ev {
             let shader_str = value.build().unwrap();
             let shader_handle = shaders
                 .get_mut(&PREVIEW_SHADER_HANDLE.typed().into())
