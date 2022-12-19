@@ -61,6 +61,14 @@ impl ShaderIO {
             ShaderIO::Vec4 => ShaderIO::Vec4,
         }
     }
+    fn fill(&self, value: f32) -> String {
+        match self {
+            ShaderIO::F32 => format!("{}", value),
+            ShaderIO::Vec2 => format!("vec2<f32>({:.5})", value),
+            ShaderIO::Vec3 => format!("vec3<f32>({:.5})", value),
+            ShaderIO::Vec4 => format!("vec4<f32>({:.5})", value),
+        }
+    }
     fn transform(self, target: ShaderIO, var: &str, extend: Option<f32>) -> String {
         let extend = extend.unwrap_or(0.0);
 
@@ -84,10 +92,13 @@ impl ShaderIO {
 
 #[derive(Clone, Default, PartialEq)]
 pub enum ShaderNodes {
+    Component,
     Extend(NumberInput),
     MaterialPreview,
+    Normal,
     #[default]
     Print,
+    Saturate,
     UV,
 }
 
@@ -97,9 +108,27 @@ impl NodeSet for ShaderNodes {
     fn resolve(
         &self,
         inputs: &HashMap<String, Self::NodeIO>,
-        _output: Option<&str>,
+        output: Option<&str>,
     ) -> Self::NodeIO {
         match self {
+            Self::Component => {
+                let output = output.unwrap();
+                let mut builder = inputs["value"].clone();
+                let input_var = builder.var;
+                let input_io = builder.output;
+
+                builder.output = ShaderIO::F32;
+                builder.var = format!("{}_{}", input_var, output);
+
+                builder.content.push(format!(
+                    "let {} = {}.{};",
+                    builder.var,
+                    input_io.transform(ShaderIO::Vec4, &input_var, Some(0.0)),
+                    output,
+                ));
+
+                builder
+            }
             Self::Extend(input) => {
                 let mut builder = inputs["value"].clone();
                 let input_var = builder.var;
@@ -117,11 +146,31 @@ impl NodeSet for ShaderNodes {
                 builder
             }
             Self::MaterialPreview => inputs["input"].clone(),
+            Self::Normal => ShaderBuilder {
+                output: ShaderIO::Vec3,
+                var: "world_normal".to_string(),
+                ..default()
+            },
             Self::Print => {
                 let builder = inputs["output"].clone();
                 let shader = builder.build().unwrap();
 
                 println!("{}", shader);
+
+                builder
+            }
+            Self::Saturate => {
+                let mut builder = inputs["value"].clone();
+                let input_var = builder.var;
+
+                builder.var = format!("{}_{}", &input_var, "saturate");
+                builder.content.push(format!(
+                    "let {} = clamp({}, {}, {});",
+                    builder.var,
+                    input_var,
+                    builder.output.fill(0.0),
+                    builder.output.fill(1.0),
+                ));
 
                 builder
             }
@@ -136,6 +185,17 @@ impl NodeSet for ShaderNodes {
     fn template(self) -> NodeTemplate<Self> {
         let preview_size = 400.0;
         let mut template = match self {
+            Self::Component => NodeTemplate {
+                title: "Vector".to_string(),
+                inputs: Some(vec![NodeInput::from_label("value")]),
+                outputs: Some(vec![
+                    NodeOutput::from_label("x"),
+                    NodeOutput::from_label("y"),
+                    NodeOutput::from_label("z"),
+                    NodeOutput::from_label("w"),
+                ]),
+                ..default()
+            },
             Self::Extend(_) => NodeTemplate {
                 title: "Extend".to_string(),
                 inputs: Some(vec![NodeInput::from_label("value")]),
@@ -150,9 +210,20 @@ impl NodeSet for ShaderNodes {
                 slot: Some(NodeSlot::new(preview_size)),
                 ..default()
             },
+            Self::Normal => NodeTemplate {
+                title: "Normal".to_string(),
+                outputs: Some(vec![NodeOutput::from_label("normal")]),
+                ..default()
+            },
             Self::Print => NodeTemplate {
                 title: "Print".to_string(),
                 inputs: Some(vec![NodeInput::from_label("output")]),
+                ..default()
+            },
+            Self::Saturate => NodeTemplate {
+                title: "Saturate".to_string(),
+                inputs: Some(vec![NodeInput::from_label("value")]),
+                outputs: Some(vec![NodeOutput::from_label("saturated")]),
                 ..default()
             },
             Self::UV => NodeTemplate {
