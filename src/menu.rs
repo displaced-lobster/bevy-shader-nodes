@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_node_editor::{widgets::NumberInput, NodeMenu};
 
-use crate::nodes::ShaderNodes;
+use crate::shader::ShaderNodes;
 
 #[derive(Default, Resource)]
 pub struct Menu;

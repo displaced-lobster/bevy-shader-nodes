@@ -4,7 +4,7 @@ use bevy_node_editor::{
     widgets::{InputWidget, InputWidgetPlugin, NumberInput},
 };
 
-use crate::nodes::ShaderNodes;
+use crate::shader::ShaderNodes;
 
 mod material_preview_widget;
 

@@ -23,7 +23,7 @@ use bevy_node_editor::{
     SlotWidget,
 };
 
-use crate::nodes::ShaderNodes;
+use crate::shader::ShaderNodes;
 
 const PREVIEW_SHADER_HANDLE: HandleUntyped =
     HandleUntyped::weak_from_u64(Shader::TYPE_UUID, 452747839445324907);

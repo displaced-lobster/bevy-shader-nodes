@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use bevy_node_editor::{NodeMenuPlugin, NodePlugins, NodeSet, PanCameraPlugin};
 
 mod menu;
-mod nodes;
+mod shader;
 mod widgets;
 
-use crate::{menu::Menu, nodes::ShaderNodes, widgets::WidgetPlugins};
+use crate::{menu::Menu, shader::ShaderNodes, widgets::WidgetPlugins};
 
 fn main() {
     App::new()
