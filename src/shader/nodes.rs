@@ -107,7 +107,7 @@ impl NodeSet for ShaderNodes {
         let preview_size = 400.0;
         let mut template = match self {
             Self::Component => NodeTemplate {
-                title: "Vector".to_string(),
+                title: "Component".to_string(),
                 inputs: Some(vec![NodeInput::from_label("value")]),
                 outputs: Some(vec![
                     NodeOutput::from_label("x"),
