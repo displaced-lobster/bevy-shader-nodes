@@ -22,6 +22,7 @@ pub enum ShaderNodes {
     Saturate,
     Texture,
     UV,
+    Vector,
 }
 
 impl NodeSet for ShaderNodes {
@@ -139,6 +140,42 @@ impl NodeSet for ShaderNodes {
                 var: "uv".to_string(),
                 ..default()
             },
+            Self::Vector => {
+                static mut COUNTER: u32 = 0;
+
+                let mut builder = ShaderBuilder {
+                    output: ShaderIO::Vec4,
+                    var: format!("vec_{}", unsafe { COUNTER }),
+                    ..default()
+                };
+
+                unsafe {
+                    COUNTER += 1;
+                }
+
+                let mut components = Vec::new();
+
+                for input in ["x", "y", "z", "w"].iter() {
+                    let mut value = inputs
+                        .remove(input.clone())
+                        .unwrap_or(None)
+                        .unwrap_or(ShaderBuilder::default());
+
+                    builder.content.append(&mut value.content);
+                    components.push(format!(
+                        "{}",
+                        value.output.transform(ShaderIO::F32, &value.var, None)
+                    ));
+                }
+
+                builder.content.push(format!(
+                    "let {} = vec4({});",
+                    builder.var,
+                    components.join(", ")
+                ));
+
+                builder
+            }
         }
     }
 
@@ -203,6 +240,17 @@ impl NodeSet for ShaderNodes {
             Self::UV => NodeTemplate {
                 title: "UV".to_string(),
                 outputs: Some(vec![NodeOutput::from_label("uv")]),
+                ..default()
+            },
+            Self::Vector => NodeTemplate {
+                title: "Vector".to_string(),
+                inputs: Some(vec![
+                    NodeInput::from_label("x"),
+                    NodeInput::from_label("y"),
+                    NodeInput::from_label("z"),
+                    NodeInput::from_label("w"),
+                ]),
+                outputs: Some(vec![NodeOutput::from_label("vec")]),
                 ..default()
             },
         };

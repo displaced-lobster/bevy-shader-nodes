@@ -18,6 +18,7 @@ impl NodeMenu<ShaderNodes> for Menu {
             ),
             ("Saturate".to_string(), ShaderNodes::Saturate),
             ("Component".to_string(), ShaderNodes::Component),
+            ("Vector".to_string(), ShaderNodes::Vector),
             ("Print".to_string(), ShaderNodes::Print),
             ("Preview".to_string(), ShaderNodes::MaterialPreview),
         ]
