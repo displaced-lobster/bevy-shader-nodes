@@ -7,8 +7,10 @@ use bevy_node_editor::{
 use crate::shader::ShaderNodes;
 
 mod material_preview_widget;
+mod texture_widget;
 
-use material_preview_widget::MaterialPreviewWidgetPlugin;
+pub use material_preview_widget::MaterialPreviewWidgetPlugin;
+use texture_widget::TextureWidgetPlugin;
 
 #[derive(Default)]
 pub struct WidgetPlugins;
@@ -17,6 +19,7 @@ impl PluginGroup for WidgetPlugins {
     fn build(self) -> PluginGroupBuilder {
         PluginGroupBuilder::start::<Self>()
             .add(MaterialPreviewWidgetPlugin)
+            .add(TextureWidgetPlugin)
             .add(InputWidgetPlugin::<ShaderNodes, NumberInput>::default())
     }
 }

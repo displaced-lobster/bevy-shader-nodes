@@ -84,9 +84,13 @@ impl SlotWidget<Self, MaterialPreviewWidget> for ShaderNodes {
     }
 }
 
-#[derive(AsBindGroup, TypeUuid, Debug, Clone)]
+#[derive(AsBindGroup, TypeUuid, Debug, Clone, Default)]
 #[uuid = "038b1fc4-f4ff-4735-8442-ff561df3fbf2"]
-pub struct PreviewMaterial {}
+pub struct PreviewMaterial {
+    #[texture(1)]
+    #[sampler(2)]
+    pub texture: Option<Handle<Image>>,
+}
 
 impl Material for PreviewMaterial {
     fn fragment_shader() -> ShaderRef {
@@ -138,7 +142,7 @@ fn setup_material_preview(
             radius: 6.0,
             ..default()
         }));
-        let material = materials.add(PreviewMaterial {});
+        let material = materials.add(PreviewMaterial::default());
         let first_pass_layer = RenderLayers::layer(1);
 
         let pbr_entity = commands

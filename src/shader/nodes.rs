@@ -20,6 +20,7 @@ pub enum ShaderNodes {
     #[default]
     Print,
     Saturate,
+    Texture,
     UV,
 }
 
@@ -95,6 +96,25 @@ impl NodeSet for ShaderNodes {
 
                 builder
             }
+            Self::Texture => {
+                let mut var = "texture_color".to_string();
+                let mut content = vec!["let texture_color = textureSample(texture, texture_sampler, uv);".to_string()];
+                let output = output.unwrap();
+                let mut io = ShaderIO::Vec4;
+
+                if output != "color" {
+                    var = format!("{}_{}", var, output);
+                    content.push(format!("let {} = texture_color.{};", var, output));
+                    io = ShaderIO::F32;
+                }
+
+                ShaderBuilder {
+                    content,
+                    output: io,
+                    var,
+                    ..default()
+                }
+            },
             Self::UV => ShaderBuilder {
                 output: ShaderIO::Vec2,
                 var: "uv".to_string(),
@@ -105,6 +125,8 @@ impl NodeSet for ShaderNodes {
 
     fn template(self) -> NodeTemplate<Self> {
         let preview_size = 400.0;
+        let texture_size = 200.0;
+
         let mut template = match self {
             Self::Component => NodeTemplate {
                 title: "Component".to_string(),
@@ -145,6 +167,18 @@ impl NodeSet for ShaderNodes {
                 title: "Saturate".to_string(),
                 inputs: Some(vec![NodeInput::from_label("value")]),
                 outputs: Some(vec![NodeOutput::from_label("saturated")]),
+                ..default()
+            },
+            Self::Texture => NodeTemplate {
+                title: "Texture".to_string(),
+                outputs: Some(vec![
+                    NodeOutput::from_label("color"),
+                    NodeOutput::from_label("r"),
+                    NodeOutput::from_label("g"),
+                    NodeOutput::from_label("b"),
+                ]),
+                slot: Some(NodeSlot::new(texture_size)),
+                width: texture_size,
                 ..default()
             },
             Self::UV => NodeTemplate {

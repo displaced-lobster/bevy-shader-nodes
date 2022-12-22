@@ -9,3 +9,4 @@ edition = "2021"
 bevy = "0.9"
 bevy-node-editor = { path = "../bevy-node-editor" }
 color-eyre = "0.5"
+nfd = "0.0.4"
