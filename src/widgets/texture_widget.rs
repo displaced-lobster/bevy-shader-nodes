@@ -1,8 +1,4 @@
-use bevy::{
-    prelude::*,
-    render::texture::DEFAULT_IMAGE_HANDLE,
-    sprite::Anchor,
-};
+use bevy::{prelude::*, render::texture::DEFAULT_IMAGE_HANDLE, sprite::Anchor};
 use bevy_node_editor::{
     assets::DefaultAssets,
     widget::{Widget, WidgetPlugin},
@@ -10,7 +6,7 @@ use bevy_node_editor::{
 };
 use nfd::Response;
 
-use crate::{shader::ShaderNodes};
+use crate::shader::ShaderNodes;
 
 use super::material_preview_widget::PreviewMaterial;
 
@@ -43,17 +39,16 @@ impl Widget for TextureWidget {
     ) {
         self.size = area;
 
-        commands.entity(entity)
-            .insert((
-                Sprite {
-                    custom_size: Some(self.size),
-                    anchor: Anchor::Center,
-                    ..default()
-                },
-                Visibility { is_visible: true },
-                ComputedVisibility::default(),
-                DEFAULT_IMAGE_HANDLE.typed::<Image>(),
-            ));
+        commands.entity(entity).insert((
+            Sprite {
+                custom_size: Some(self.size),
+                anchor: Anchor::Center,
+                ..default()
+            },
+            Visibility { is_visible: true },
+            ComputedVisibility::default(),
+            DEFAULT_IMAGE_HANDLE.typed::<Image>(),
+        ));
     }
 
     fn can_click(&self) -> bool {
@@ -104,8 +99,7 @@ fn load_texture(
                 material.1.texture = Some(handle.clone());
             }
 
-            commands.entity(entity)
-                .insert(handle);
+            commands.entity(entity).insert(handle);
         }
     }
 }

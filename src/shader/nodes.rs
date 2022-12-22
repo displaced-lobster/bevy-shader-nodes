@@ -37,7 +37,10 @@ impl NodeSet for ShaderNodes {
         match self {
             Self::Component => {
                 let output = output.unwrap();
-                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
+                let mut builder = inputs
+                    .remove("value")
+                    .unwrap_or(None)
+                    .unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
                 let input_io = builder.output;
 
@@ -54,7 +57,10 @@ impl NodeSet for ShaderNodes {
                 builder
             }
             Self::Extend(input) => {
-                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
+                let mut builder = inputs
+                    .remove("value")
+                    .unwrap_or(None)
+                    .unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
                 let input_io = builder.output;
 
@@ -69,14 +75,20 @@ impl NodeSet for ShaderNodes {
 
                 builder
             }
-            Self::MaterialPreview => inputs.remove("input").unwrap_or(None).unwrap_or(ShaderBuilder::default()),
+            Self::MaterialPreview => inputs
+                .remove("input")
+                .unwrap_or(None)
+                .unwrap_or(ShaderBuilder::default()),
             Self::Normal => ShaderBuilder {
                 output: ShaderIO::Vec3,
                 var: "world_normal".to_string(),
                 ..default()
             },
             Self::Print => {
-                let builder = inputs.remove("output").unwrap_or(None).unwrap_or(ShaderBuilder::default());
+                let builder = inputs
+                    .remove("output")
+                    .unwrap_or(None)
+                    .unwrap_or(ShaderBuilder::default());
                 let shader = builder.build().unwrap();
 
                 println!("{}", shader);
@@ -84,7 +96,10 @@ impl NodeSet for ShaderNodes {
                 builder
             }
             Self::Saturate => {
-                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
+                let mut builder = inputs
+                    .remove("value")
+                    .unwrap_or(None)
+                    .unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
 
                 builder.var = format!("{}_{}", &input_var, "saturate");
@@ -100,7 +115,9 @@ impl NodeSet for ShaderNodes {
             }
             Self::Texture => {
                 let mut var = "texture_color".to_string();
-                let mut content = vec!["let texture_color = textureSample(texture, texture_sampler, uv);".to_string()];
+                let mut content = vec![
+                    "let texture_color = textureSample(texture, texture_sampler, uv);".to_string(),
+                ];
                 let output = output.unwrap();
                 let mut io = ShaderIO::Vec4;
 
@@ -116,7 +133,7 @@ impl NodeSet for ShaderNodes {
                     var,
                     ..default()
                 }
-            },
+            }
             Self::UV => ShaderBuilder {
                 output: ShaderIO::Vec2,
                 var: "uv".to_string(),
