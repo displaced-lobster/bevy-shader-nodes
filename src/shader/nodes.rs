@@ -29,13 +29,15 @@ impl NodeSet for ShaderNodes {
 
     fn resolve(
         &self,
-        inputs: &HashMap<String, Self::NodeIO>,
+        inputs: HashMap<String, Option<Self::NodeIO>>,
         output: Option<&str>,
     ) -> Self::NodeIO {
+        let mut inputs = inputs;
+
         match self {
             Self::Component => {
                 let output = output.unwrap();
-                let mut builder = inputs["value"].clone();
+                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
                 let input_io = builder.output;
 
@@ -52,7 +54,7 @@ impl NodeSet for ShaderNodes {
                 builder
             }
             Self::Extend(input) => {
-                let mut builder = inputs["value"].clone();
+                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
                 let input_io = builder.output;
 
@@ -67,14 +69,14 @@ impl NodeSet for ShaderNodes {
 
                 builder
             }
-            Self::MaterialPreview => inputs["input"].clone(),
+            Self::MaterialPreview => inputs.remove("input").unwrap_or(None).unwrap_or(ShaderBuilder::default()),
             Self::Normal => ShaderBuilder {
                 output: ShaderIO::Vec3,
                 var: "world_normal".to_string(),
                 ..default()
             },
             Self::Print => {
-                let builder = inputs["output"].clone();
+                let builder = inputs.remove("output").unwrap_or(None).unwrap_or(ShaderBuilder::default());
                 let shader = builder.build().unwrap();
 
                 println!("{}", shader);
@@ -82,7 +84,7 @@ impl NodeSet for ShaderNodes {
                 builder
             }
             Self::Saturate => {
-                let mut builder = inputs["value"].clone();
+                let mut builder = inputs.remove("value").unwrap_or(None).unwrap_or(ShaderBuilder::default());
                 let input_var = builder.var;
 
                 builder.var = format!("{}_{}", &input_var, "saturate");

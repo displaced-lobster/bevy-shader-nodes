@@ -3,11 +3,21 @@ use std::io::Write;
 
 use crate::shader::ShaderIO;
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct ShaderBuilder {
     pub content: Vec<String>,
     pub output: ShaderIO,
     pub var: String,
+}
+
+impl Default for ShaderBuilder {
+    fn default() -> Self {
+        Self {
+            content: vec![],
+            output: ShaderIO::Vec4,
+            var: "ZERO".to_string(),
+        }
+    }
 }
 
 const SHADER_PRELUDE: &str = r#"
@@ -15,6 +25,8 @@ const SHADER_PRELUDE: &str = r#"
 var texture: texture_2d<f32>;
 @group(1) @binding(2)
 var texture_sampler: sampler;
+
+let ZERO = vec4<f32>(0.0, 0.0, 0.0, 0.0);
 
 @fragment
 fn fragment(
