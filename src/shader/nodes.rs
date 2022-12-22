@@ -80,11 +80,24 @@ impl NodeSet for ShaderNodes {
                 .remove("input")
                 .unwrap_or(None)
                 .unwrap_or(ShaderBuilder::default()),
-            Self::Normal => ShaderBuilder {
-                output: ShaderIO::Vec3,
-                var: "world_normal".to_string(),
-                ..default()
-            },
+            Self::Normal => {
+                let mut content = Vec::new();
+                let out = output.unwrap();
+
+                let (io, var) = if out == "normal" {
+                    (ShaderIO::Vec3, "world_normal".to_string())
+                } else {
+                    content.push(format!("let world_normal_{} = world_normal.{};", out, out));
+
+                    (ShaderIO::F32, format!("world_normal_{}", out))
+                };
+
+                ShaderBuilder {
+                    content,
+                    output: io,
+                    var,
+                }
+            }
             Self::Print => {
                 let builder = inputs
                     .remove("output")
@@ -135,11 +148,24 @@ impl NodeSet for ShaderNodes {
                     ..default()
                 }
             }
-            Self::UV => ShaderBuilder {
-                output: ShaderIO::Vec2,
-                var: "uv".to_string(),
-                ..default()
-            },
+            Self::UV => {
+                let mut content = Vec::new();
+                let out = output.unwrap();
+
+                let (io, var) = if out == "uv" {
+                    (ShaderIO::Vec2, "uv".to_string())
+                } else {
+                    content.push(format!("let uv_{} = uv.{};", out, out));
+
+                    (ShaderIO::F32, format!("uv_{}", out))
+                };
+
+                ShaderBuilder {
+                    content,
+                    output: io,
+                    var,
+                }
+            }
             Self::Vector => {
                 static mut COUNTER: u32 = 0;
 
@@ -211,7 +237,12 @@ impl NodeSet for ShaderNodes {
             },
             Self::Normal => NodeTemplate {
                 title: "Normal".to_string(),
-                outputs: Some(vec![NodeOutput::from_label("normal")]),
+                outputs: Some(vec![
+                    NodeOutput::from_label("normal"),
+                    NodeOutput::from_label("x"),
+                    NodeOutput::from_label("y"),
+                    NodeOutput::from_label("z"),
+                ]),
                 ..default()
             },
             Self::Print => NodeTemplate {
@@ -239,7 +270,11 @@ impl NodeSet for ShaderNodes {
             },
             Self::UV => NodeTemplate {
                 title: "UV".to_string(),
-                outputs: Some(vec![NodeOutput::from_label("uv")]),
+                outputs: Some(vec![
+                    NodeOutput::from_label("uv"),
+                    NodeOutput::from_label("x"),
+                    NodeOutput::from_label("y"),
+                ]),
                 ..default()
             },
             Self::Vector => NodeTemplate {
