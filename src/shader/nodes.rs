@@ -145,7 +145,6 @@ impl NodeSet for ShaderNodes {
                     content,
                     output: io,
                     var,
-                    ..default()
                 }
             }
             Self::UV => {
@@ -183,15 +182,17 @@ impl NodeSet for ShaderNodes {
 
                 for input in ["x", "y", "z", "w"].iter() {
                     let mut value = inputs
-                        .remove(input.clone())
+                        .remove(*input)
                         .unwrap_or(None)
                         .unwrap_or(ShaderBuilder::default());
 
                     builder.content.append(&mut value.content);
-                    components.push(format!(
-                        "{}",
-                        value.output.transform(ShaderIO::F32, &value.var, None)
-                    ));
+                    components.push(
+                        value
+                            .output
+                            .transform(ShaderIO::F32, &value.var, None)
+                            .to_string(),
+                    );
                 }
 
                 builder.content.push(format!(

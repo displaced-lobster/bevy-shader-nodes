@@ -33,9 +33,8 @@ impl SlotWidget<Self, InputWidget<NumberInput>> for ShaderNodes {
     }
 
     fn set_value(&mut self, value: NumberInput) {
-        match self {
-            Self::Extend(v) => *v = value,
-            _ => {}
+        if let Self::Extend(v) = self {
+            *v = value;
         }
     }
 }

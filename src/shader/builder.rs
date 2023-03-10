@@ -44,7 +44,11 @@ impl ShaderBuilder {
             writeln!(&mut buf, "    {}", line)?;
         }
 
-        let var = if self.var.len() > 0 { &self.var } else { "0.0" };
+        let var = if !self.var.is_empty() {
+            &self.var
+        } else {
+            "0.0"
+        };
 
         writeln!(
             &mut buf,

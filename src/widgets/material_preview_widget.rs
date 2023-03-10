@@ -190,14 +190,10 @@ fn update_preview_material(
     mut shaders: ResMut<Assets<Shader>>,
     mut ev_node: EventReader<NodeEvent<ShaderNodes>>,
 ) {
-    if let Some(ev) = ev_node.iter().next() {
-        if let NodeEvent::Resolved((_, value)) = ev {
-            let shader_str = value.build().unwrap();
-            let shader_handle = shaders
-                .get_mut(&PREVIEW_SHADER_HANDLE.typed().into())
-                .unwrap();
+    if let Some(NodeEvent::Resolved((_, value))) = ev_node.iter().next() {
+        let shader_str = value.build().unwrap();
+        let shader_handle = shaders.get_mut(&PREVIEW_SHADER_HANDLE.typed()).unwrap();
 
-            *shader_handle = Shader::from_wgsl(shader_str);
-        }
+        *shader_handle = Shader::from_wgsl(shader_str);
     }
 }
