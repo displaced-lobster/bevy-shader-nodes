@@ -45,7 +45,7 @@ impl Widget for TextureWidget {
                 anchor: Anchor::Center,
                 ..default()
             },
-            Visibility { is_visible: true },
+            Visibility::Inherited,
             ComputedVisibility::default(),
             DEFAULT_IMAGE_HANDLE.typed::<Image>(),
         ));

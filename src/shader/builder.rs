@@ -26,7 +26,7 @@ var texture: texture_2d<f32>;
 @group(1) @binding(2)
 var texture_sampler: sampler;
 
-let ZERO = vec4<f32>(0.0, 0.0, 0.0, 0.0);
+const ZERO = vec4<f32>(0.0, 0.0, 0.0, 0.0);
 
 @fragment
 fn fragment(

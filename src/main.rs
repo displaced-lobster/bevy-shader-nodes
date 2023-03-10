@@ -10,7 +10,7 @@ use crate::{menu::Menu, shader::ShaderNodes, widgets::WidgetPlugins};
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.12, 0.12, 0.12)))
-        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
         .add_plugins(NodePlugins::<ShaderNodes>::default())
         .add_plugins(WidgetPlugins)
