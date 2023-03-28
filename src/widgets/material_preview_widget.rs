@@ -16,10 +16,10 @@ use bevy::{
         view::RenderLayers,
     },
 };
-use bevy_node_editor::{
+use bevy_flow_node::{
     assets::DefaultAssets,
     widget::{Widget, WidgetPlugin},
-    NodeEvent,
+    FlowNodeEvent,
     SlotWidget,
 };
 
@@ -188,9 +188,9 @@ fn setup_material_preview(
 
 fn update_preview_material(
     mut shaders: ResMut<Assets<Shader>>,
-    mut ev_node: EventReader<NodeEvent<ShaderNodes>>,
+    mut ev_node: EventReader<FlowNodeEvent<ShaderNodes>>,
 ) {
-    if let Some(NodeEvent::Resolved((_, value))) = ev_node.iter().next() {
+    if let Some(FlowNodeEvent::Resolved((_, value))) = ev_node.iter().next() {
         let shader_str = value.build().unwrap();
         let shader_handle = shaders.get_mut(&PREVIEW_SHADER_HANDLE.typed()).unwrap();
 

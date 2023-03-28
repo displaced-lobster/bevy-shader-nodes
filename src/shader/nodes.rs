@@ -1,11 +1,11 @@
 use bevy::prelude::*;
-use bevy_node_editor::{
+use bevy_flow_node::{
     widgets::NumberInput,
-    NodeInput,
-    NodeOutput,
-    NodeSet,
-    NodeSlot,
-    NodeTemplate,
+    FlowNodeInput,
+    FlowNodeOutput,
+    FlowNodeSet,
+    FlowNodeSlot,
+    FlowNodeTemplate,
 };
 use std::collections::HashMap;
 
@@ -25,7 +25,7 @@ pub enum ShaderNodes {
     Vector,
 }
 
-impl NodeSet for ShaderNodes {
+impl FlowNodeSet for ShaderNodes {
     type NodeIO = ShaderBuilder;
 
     fn resolve(
@@ -206,87 +206,87 @@ impl NodeSet for ShaderNodes {
         }
     }
 
-    fn template(self) -> NodeTemplate<Self> {
+    fn template(self) -> FlowNodeTemplate<Self> {
         let preview_size = 400.0;
         let texture_size = 200.0;
 
         let mut template = match self {
-            Self::Component => NodeTemplate {
+            Self::Component => FlowNodeTemplate {
                 title: "Component".to_string(),
-                inputs: Some(vec![NodeInput::from_label("value")]),
+                inputs: Some(vec![FlowNodeInput::from_label("value")]),
                 outputs: Some(vec![
-                    NodeOutput::from_label("x"),
-                    NodeOutput::from_label("y"),
-                    NodeOutput::from_label("z"),
-                    NodeOutput::from_label("w"),
+                    FlowNodeOutput::from_label("x"),
+                    FlowNodeOutput::from_label("y"),
+                    FlowNodeOutput::from_label("z"),
+                    FlowNodeOutput::from_label("w"),
                 ]),
                 ..default()
             },
-            Self::Extend(_) => NodeTemplate {
+            Self::Extend(_) => FlowNodeTemplate {
                 title: "Extend".to_string(),
-                inputs: Some(vec![NodeInput::from_label("value")]),
-                outputs: Some(vec![NodeOutput::from_label("vec")]),
-                slot: Some(NodeSlot::new(20.0)),
+                inputs: Some(vec![FlowNodeInput::from_label("value")]),
+                outputs: Some(vec![FlowNodeOutput::from_label("vec")]),
+                slot: Some(FlowNodeSlot::new(20.0)),
                 ..default()
             },
-            Self::MaterialPreview => NodeTemplate {
+            Self::MaterialPreview => FlowNodeTemplate {
                 title: "Preview".to_string(),
-                inputs: Some(vec![NodeInput::from_label("input")]),
+                inputs: Some(vec![FlowNodeInput::from_label("input")]),
                 width: preview_size,
-                slot: Some(NodeSlot::new(preview_size)),
+                slot: Some(FlowNodeSlot::new(preview_size)),
                 ..default()
             },
-            Self::Normal => NodeTemplate {
+            Self::Normal => FlowNodeTemplate {
                 title: "Normal".to_string(),
                 outputs: Some(vec![
-                    NodeOutput::from_label("normal"),
-                    NodeOutput::from_label("x"),
-                    NodeOutput::from_label("y"),
-                    NodeOutput::from_label("z"),
+                    FlowNodeOutput::from_label("normal"),
+                    FlowNodeOutput::from_label("x"),
+                    FlowNodeOutput::from_label("y"),
+                    FlowNodeOutput::from_label("z"),
                 ]),
                 ..default()
             },
-            Self::Print => NodeTemplate {
+            Self::Print => FlowNodeTemplate {
                 title: "Print".to_string(),
-                inputs: Some(vec![NodeInput::from_label("output")]),
+                inputs: Some(vec![FlowNodeInput::from_label("output")]),
                 ..default()
             },
-            Self::Saturate => NodeTemplate {
+            Self::Saturate => FlowNodeTemplate {
                 title: "Saturate".to_string(),
-                inputs: Some(vec![NodeInput::from_label("value")]),
-                outputs: Some(vec![NodeOutput::from_label("saturated")]),
+                inputs: Some(vec![FlowNodeInput::from_label("value")]),
+                outputs: Some(vec![FlowNodeOutput::from_label("saturated")]),
                 ..default()
             },
-            Self::Texture => NodeTemplate {
+            Self::Texture => FlowNodeTemplate {
                 title: "Texture".to_string(),
                 outputs: Some(vec![
-                    NodeOutput::from_label("color"),
-                    NodeOutput::from_label("r"),
-                    NodeOutput::from_label("g"),
-                    NodeOutput::from_label("b"),
+                    FlowNodeOutput::from_label("color"),
+                    FlowNodeOutput::from_label("r"),
+                    FlowNodeOutput::from_label("g"),
+                    FlowNodeOutput::from_label("b"),
                 ]),
-                slot: Some(NodeSlot::new(texture_size)),
+                slot: Some(FlowNodeSlot::new(texture_size)),
                 width: texture_size,
                 ..default()
             },
-            Self::UV => NodeTemplate {
+            Self::UV => FlowNodeTemplate {
                 title: "UV".to_string(),
                 outputs: Some(vec![
-                    NodeOutput::from_label("uv"),
-                    NodeOutput::from_label("x"),
-                    NodeOutput::from_label("y"),
+                    FlowNodeOutput::from_label("uv"),
+                    FlowNodeOutput::from_label("x"),
+                    FlowNodeOutput::from_label("y"),
                 ]),
                 ..default()
             },
-            Self::Vector => NodeTemplate {
+            Self::Vector => FlowNodeTemplate {
                 title: "Vector".to_string(),
                 inputs: Some(vec![
-                    NodeInput::from_label("x"),
-                    NodeInput::from_label("y"),
-                    NodeInput::from_label("z"),
-                    NodeInput::from_label("w"),
+                    FlowNodeInput::from_label("x"),
+                    FlowNodeInput::from_label("y"),
+                    FlowNodeInput::from_label("z"),
+                    FlowNodeInput::from_label("w"),
                 ]),
-                outputs: Some(vec![NodeOutput::from_label("vec")]),
+                outputs: Some(vec![FlowNodeOutput::from_label("vec")]),
                 ..default()
             },
         };

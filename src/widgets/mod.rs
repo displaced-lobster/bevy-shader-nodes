@@ -1,5 +1,5 @@
 use bevy::app::{PluginGroup, PluginGroupBuilder};
-use bevy_node_editor::{
+use bevy_flow_node::{
     widget::SlotWidget,
     widgets::{InputWidget, InputWidgetPlugin, NumberInput},
 };

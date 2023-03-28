@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_node_editor::{NodeMenuPlugin, NodePlugins, NodeSet, PanCameraPlugin};
+use bevy_flow_node::{FlowNodeMenuPlugin, FlowNodePlugins, FlowNodeSet, PanCameraPlugin};
 
 mod menu;
 mod shader;
@@ -12,9 +12,9 @@ fn main() {
         .insert_resource(ClearColor(Color::rgb(0.12, 0.12, 0.12)))
         .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins)
-        .add_plugins(NodePlugins::<ShaderNodes>::default())
+        .add_plugins(FlowNodePlugins::<ShaderNodes>::default())
         .add_plugins(WidgetPlugins)
-        .add_plugin(NodeMenuPlugin::<Menu, ShaderNodes>::default())
+        .add_plugin(FlowNodeMenuPlugin::<Menu, ShaderNodes>::default())
         .add_plugin(PanCameraPlugin)
         .add_startup_system(setup)
         .run();

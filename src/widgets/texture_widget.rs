@@ -1,5 +1,5 @@
 use bevy::{prelude::*, render::texture::DEFAULT_IMAGE_HANDLE, sprite::Anchor};
-use bevy_node_editor::{
+use bevy_flow_node::{
     assets::DefaultAssets,
     widget::{Widget, WidgetPlugin},
     SlotWidget,

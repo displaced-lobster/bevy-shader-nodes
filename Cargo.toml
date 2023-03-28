@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.10"
-bevy-node-editor = { git = "https://github.com/displaced-lobster/bevy-node-editor.git" }
+bevy-flow-node = { git = "https://github.com/displaced-lobster/bevy-node-editor.git" }
 color-eyre = "0.5"
 nfd = "0.0.4"

@@ -1,12 +1,12 @@
 use bevy::prelude::*;
-use bevy_node_editor::{widgets::NumberInput, NodeMenu};
+use bevy_flow_node::{widgets::NumberInput, FlowNodeMenu};
 
 use crate::shader::ShaderNodes;
 
 #[derive(Default, Resource)]
 pub struct Menu;
 
-impl NodeMenu<ShaderNodes> for Menu {
+impl FlowNodeMenu<ShaderNodes> for Menu {
     fn options(&self) -> Vec<(String, ShaderNodes)> {
         vec![
             ("Normal".to_string(), ShaderNodes::Normal),
